@@ -35,3 +35,4 @@ To use this calculator:
 
 	1.	Clone or download the repository.
 	2.	Open the index.html file in your web browser.
+ 	3.	https://zharkeeva.github.io/calculator/
