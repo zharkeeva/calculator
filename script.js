@@ -10,25 +10,61 @@
     };
 
     function updateScreen(value) {
+        resetScreenIfError();
+        const currentNumber = getCurrentNumber();
+
+        if (isRedundantZero(currentNumber, value)) return;
+        if (isValidNumberReplacement(currentNumber, value)) replaceLeadingZero(value);
+        else if (isOperator(value)) processOperator(value);
+        else if (isDecimalPoint(value)) processDecimalPoint();
+        else if (isPercentage(value)) applyPercentage();
+        else appendToScreen(value);
+    }
+
+    function resetScreenIfError() {
         if (calculator.screen.value === "Error" || calculator.screen.value === "Please enter") {
             calculator.screen.value = '';
         }
+    }
 
-        if (value === '.' && !canAddDecimal()) {
-            return;
-        }
+    function isRedundantZero(currentNumber, value) {
+        return currentNumber === '0' && value === '0';
+    }
 
-        if (value === '%') {
-            applyPercentage();
-            return;
-        }
+    function isValidNumberReplacement(currentNumber, value) {
+        return currentNumber === '0' && value !== '.' && !isOperator(value);
+    }
 
+    function replaceLeadingZero(value) {
+        calculator.screen.value = calculator.screen.value.slice(0, -1) + value;
+    }
+
+    function processOperator(value) {
+        if (calculator.screen.value === '' || isOperator(calculator.screen.value.slice(-1))) return;
+        appendToScreen(value);
+        updateLastOperator(value);
+    }
+
+    function isDecimalPoint(value) {
+        return value === '.';
+    }
+
+    function processDecimalPoint() {
+        if (calculator.screen.value === '' || isOperator(calculator.screen.value.slice(-1)) || !canAddDecimal()) return;
+        appendToScreen('.');
+    }
+
+    function isPercentage(value) {
+        return value === '%';
+    }
+
+    function appendToScreen(value) {
         calculator.screen.value += value;
+    }
 
-        if (isOperator(value)) {
-            calculator.lastOperator = value;
-            calculator.lastNumber = calculator.screen.value.slice(0, -1);
-        }
+    function updateLastOperator(value) {
+        calculator.lastOperator = value;
+        calculator.lastNumber = calculator.screen.value.slice(0, -1);
     }
 
     function canAddDecimal() {
@@ -108,4 +144,3 @@
     initCalculator();
 
 })();
-
